@@ -1,79 +1,75 @@
-provider "google" {
-  project     = "gb-playground"
-  region      = "eu-west4"
+variable "proj" {
+    description = "GCP Project ID."
+    default = "gb-playground"
 }
 
-resource "google_cloud_run_service" "nomadCR" {
-  name     = "nomadCR"
-  location = var.location
+variable "location" {
+    description = "GCP Region to deploy cloud run services - ie eu-west4."
+    default = "us-central1"
+}
 
+provider "google" {
+  project = var.proj
+  region  = var.location
+  zone    = "${var.location}-a"
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloud_run_service" "nomad-gcr" {
+  name     = "nomad-gcr"
+  location = var.location
+  project  = var.proj
+  
   template {
     spec {
       containers {
-        image = "gcr.io/gb-playground/nomad:1.0.4"
-        command = ["/usr/bin/nomad", "agent", "-dev"]
+        image = "gcr.io/${var.proj}/nomad:1.0.4"
+        //command = ["/usr/bin/nomad", "agent", "-dev"]
         ports {
-            name = "nomad"
+            name = "http1"
             container_port = 4646
         }
-        ports {
-            name = "cluster"
-            container_port = 4647
-        }
       }
     }
 
     metadata {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
+        "autoscaling.knative.dev/minScale"      = "1"
         "run.googleapis.com/client-name"        = "terraform"
       }
     }
+    
   }
-  autogenerate_revision_name = true
+  //autogenerate_revision_name = true
 }
 
-resource "google_cloud_run_service" "consulCR" {
-  name     = "consulCR"
-  location = var.location
+resource "google_cloud_run_service_iam_policy" "noauth-nomad" {
+  location    = var.location
+  project     = var.proj
+  service     = google_cloud_run_service.nomad-gcr.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
 
+resource "google_cloud_run_service" "vault-gcr" {
+  name     = "vault-gcr"
+  location = var.location
+  project  = var.proj
+  
   template {
     spec {
       containers {
-        image = "docker.io/hashicorp/consul:latest"
-        command = ["/usr/bin/consul", "agent", "-dev"]
+        image = "gcr.io/${var.proj}/vault:1.6.3"
         ports {
-            name = "consul"
-            container_port = 8500
-        }
-        ports {
-            name = "dns"
-            container_port = 8600
-        }
-      }
-    }
-
-    metadata {
-      annotations = {
-        "autoscaling.knative.dev/maxScale"      = "1"
-        "run.googleapis.com/client-name"        = "terraform"
-      }
-    }
-  }
-  autogenerate_revision_name = true
-}
-
-resource "google_cloud_run_service" "vaultCR" {
-  name     = "vaultCR"
-  location = var.location
-
-  template {
-    spec {
-      containers {
-        image = "docker.io/hashicorp/vault:latest"
-        command = ["/usr/bin/vault", "agent", "-dev"]
-        ports {
-            name = "vault"
+            name = "http1"
             container_port = 8200
         }
       }
@@ -82,9 +78,62 @@ resource "google_cloud_run_service" "vaultCR" {
     metadata {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
+        "autoscaling.knative.dev/minScale"      = "1"
         "run.googleapis.com/client-name"        = "terraform"
       }
     }
   }
-  autogenerate_revision_name = true
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth-vault" {
+  location    = var.location
+  project     = var.proj
+  service     = google_cloud_run_service.vault-gcr.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+/*
+resource "google_cloud_run_service" "consul-gcr" {
+  name     = "consul-gcr"
+  location = var.location
+  project  = var.proj
+  
+  template {
+    spec {
+      containers {
+        image = "gcr.io/${var.proj}/consul:1.9.4"
+        ports {
+            name = "http1"
+            container_port = 8500
+        }
+      }
+    }
+
+    metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "1"
+        "autoscaling.knative.dev/minScale"      = "1"
+        "run.googleapis.com/client-name"        = "terraform"
+      }
+    }
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth-consul" {
+  location    = var.location
+  project     = var.proj
+  service     = google_cloud_run_service.consul-gcr.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+output "endpoint-consul" {
+  value = google_cloud_run_service.consul-gcr.status
+}*/
+
+output "endpoint-nomad" {
+  value = google_cloud_run_service.nomad-gcr.status[0].url
+}
+
+output "endpoint-vault" {
+  value = google_cloud_run_service.vault-gcr.status[0].url
 }

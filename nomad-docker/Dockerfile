@@ -6,4 +6,4 @@ RUN yum -y install unzip \
 	&& yum clean all \
 	&& curl -o nomad.zip https://releases.hashicorp.com/nomad/1.0.4/nomad_1.0.4_linux_amd64.zip \
 	&& unzip nomad.zip -d /usr/bin/
-CMD ["/usr/bin/nomad", "agent", "-server", "-dev"]
+CMD ["/usr/bin/nomad", "agent", "-dev", "-bind=0.0.0.0"]
