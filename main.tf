@@ -5,7 +5,7 @@ variable "proj" {
 
 variable "location" {
     description = "GCP Region to deploy cloud run services - ie eu-west4."
-    default = "us-central1"
+    default = "europe-west4"
 }
 
 provider "google" {
@@ -92,7 +92,6 @@ resource "google_cloud_run_service_iam_policy" "noauth-vault" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-/*
 resource "google_cloud_run_service" "consul-gcr" {
   name     = "consul-gcr"
   location = var.location
@@ -127,8 +126,8 @@ resource "google_cloud_run_service_iam_policy" "noauth-consul" {
 }
 
 output "endpoint-consul" {
-  value = google_cloud_run_service.consul-gcr.status
-}*/
+  value = google_cloud_run_service.consul-gcr.status[0].url
+}
 
 output "endpoint-nomad" {
   value = google_cloud_run_service.nomad-gcr.status[0].url

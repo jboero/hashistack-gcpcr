@@ -21,7 +21,7 @@ data_dir = "/opt/consul"
 # servers. By default, this is "127.0.0.1", allowing only loopback connections. In
 # Consul 1.0 and later this can be set to a space-separated list of addresses to bind
 # to, or a go-sockaddr template that can potentially resolve to multiple addresses.
-client_addr = "0.0.0.0"
+client_addr = "::"
 
 # ui
 # Enables the built-in web UI server and the required HTTP routes. This eliminates
@@ -38,8 +38,7 @@ ui = true
 # WAN gossip pool with server nodes in other datacenters. Servers act as gateways to
 # other datacenters and forward traffic as appropriate.
 server = true
-#bind = "192.168.2.13"
-#advertise_addr = "192.168.2.5"
+advertise_addr = "fddf:3978:feb1:d745::c001"
 
 # bootstrap_expect
 # This flag provides the number of expected servers in the datacenter. Either this value
