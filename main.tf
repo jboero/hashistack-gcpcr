@@ -32,7 +32,7 @@ resource "google_cloud_run_service" "nomad-gcr" {
     spec {
       containers {
         image = "gcr.io/${var.proj}/nomad:1.0.4"
-        //command = ["/usr/bin/nomad", "agent", "-dev"]
+        command = ["/usr/bin/nomad", "agent", "-dev"]
         ports {
             name = "http1"
             container_port = 4646
@@ -68,6 +68,7 @@ resource "google_cloud_run_service" "vault-gcr" {
     spec {
       containers {
         image = "gcr.io/${var.proj}/vault:1.6.3"
+        command = ["/usr/bin/vault", "server", "-dev", "-dev-root-token-id=${var.vault_root_token}"]
         ports {
             name = "http1"
             container_port = 8200
