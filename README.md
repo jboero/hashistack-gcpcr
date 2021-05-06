@@ -1,5 +1,5 @@
 # HashiCorp Stack on GCR
-Deploy a full set of HashiStack services in Google Cloud Run starting at a few pennies a month.  Automatic HA and TLS courtesy of Google.  Couch cushion HashiStack.  This uses a single container limitation on GCR though some of them could potentially scale out if configured correctly.  Uses simple `for_each` on the variable `singletons` to simplify everything.  Note you will need to build out your own private image registry in GCR.  Dockerfiles are included.
+Deploy a full set of HashiStack services in Google Cloud Run starting at a few pennies a month.  Automatic HA and TLS courtesy of Google.  Couch cushion HashiStack.  This uses a single container limitation on GCR though some of them could potentially scale out if configured correctly.  Uses simple `for_each` on the variable `singletons` to simplify everything.  Note you will need to build out your own private image registry in GCR.  Dockerfiles are included.  Limitations of GCR mean you can only expose one port and it's exposed on 443.
 
 # Dockerfiles
 The Dockerfiles I use are all based on CentOS Streams latest and use our signed DNF repos for secure binaries.  They could be smaller if built from a smaller Atomic distribution or custom from scratch but I'm keeping it simple and ENT friendly.
