@@ -11,27 +11,27 @@ variable "singletons" {
   default = {
     vault = {
       name    = "vault:latest"
-      command = ["/usr/bin/vault", "server", "-dev"]
+      command = ["/bin/vault", "server", "-dev", "-dev-listen-address=:8200"]
       port    = 8200
     },
-    consule = {
+    consul = {
       name  = "consul:latest"
-      command = ["/usr/bin/consul", "agent", "-dev"]
+      command = ["/bin/consul", "agent", "-config-dir=/etc/consul.d"]
       port = 8500
     },
     nomad = {
       name  = "nomad:latest"
-      command = ["/usr/bin/nomad", "agent", "-dev"]
+      command = ["/usr/bin/nomad", "agent", "-dev", "-bind", "0.0.0.0"]
       port = 4646
     },
     waypoint = {
       name  = "waypoint:latest"
-      command = ["/usr/bin/waypoint", "server", "run", "-accept-tos"]
+      command = ["/usr/bin/waypoint", "server", "run", "-accept-tos", "-listen-http=0.0.0.0:9702", "-db=/tmp/tmp.db"]
       port = 9702
-    }/* ,
+    },/*
     boundary = { // Boundary requires an external Postgres db.
       name  = "boundary:latest"
-      command = ["/usr/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
+      command = ["/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
       port = 9200
     }*/
   }
