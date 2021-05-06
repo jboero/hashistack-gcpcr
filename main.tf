@@ -4,7 +4,7 @@
  You must customize your own image and build it into your own image registry.*/
 variable "proj" {
     description = "GCP Project ID."
-    default = "{YOURPROJ}"
+    default = "gb-playground"
 }
 
 variable "location" {
@@ -19,27 +19,27 @@ variable "singletons" {
   default = {
     vault = {
       name    = "vault:latest"
-      command = ["/usr/bin/vault", "server", "-dev"]
+      command = ["/bin/vault", "server", "-dev", "-dev-listen-address=:8200"]
       port    = 8200
     },
-    consule = {
+    consul = {
       name  = "consul:latest"
-      command = ["/usr/bin/consul", "agent", "-dev"]
+      command = ["/bin/consul", "agent", "-config-dir=/etc/consul.d"]
       port = 8500
     },
     nomad = {
       name  = "nomad:latest"
-      command = ["/usr/bin/nomad", "agent", "-dev"]
+      command = ["/usr/bin/nomad", "agent", "-dev", "-bind", "0.0.0.0"]
       port = 4646
     },
     waypoint = {
       name  = "waypoint:latest"
-      command = ["/usr/bin/waypoint", "server", "run", "-accept-tos"]
+      command = ["/usr/bin/waypoint", "server", "run", "-accept-tos", "-listen-http=0.0.0.0:9702", "-db=/tmp/tmp.db"]
       port = 9702
-    }/* ,
+    },/*
     boundary = { // Boundary requires an external Postgres db.
       name  = "boundary:latest"
-      command = ["/usr/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
+      command = ["/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
       port = 9200
     }*/
   }
@@ -71,7 +71,8 @@ resource "google_cloud_run_service" "runners" {
     spec {
       containers {
         image = "gcr.io/${var.proj}/${each.value.name}"
-        command = each.value.command
+        command = [each.value.command[0]]
+        args = slice(each.value.command, 1, length(each.value.command))
         ports {
             name = "http1"
             container_port = each.value.port
@@ -83,7 +84,7 @@ resource "google_cloud_run_service" "runners" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
         "autoscaling.knative.dev/minScale"      = "1"
-        "run.googleapis.com/client-name"        = each.value.name
+        "run.googleapis.com/client-name"        = each.key
       }
     }
   }
