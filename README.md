@@ -37,7 +37,7 @@ variable "singletons" {
   }
 }
 ```
-Apply will happily dump out your endpoints which you can share with other workspaces in your Terraform Cloud organization:
+Note you should not use `latest` tag obviously but I use these for release demos. Apply will happily dump out your endpoints which you can share with other workspaces in your Terraform Cloud organization:
 ```
 Plan: 8 to add, 0 to change, 0 to destroy.
 
