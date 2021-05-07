@@ -4,7 +4,7 @@
  You must customize your own image and build it into your own image registry.*/
 variable "proj" {
     description = "GCP Project ID."
-    default = "gb-playground"
+    default = "{YOURPROJECT}"
 }
 
 variable "location" {
