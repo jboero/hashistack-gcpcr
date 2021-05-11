@@ -5,8 +5,8 @@ module "nomad" {
   gcp_region = var.region
   gcp_zone = "${var.region}-a"
   nomad_client_cluster_name = "nomads"
-  nomad_client_source_image = ""
-  nomad_consul_server_cluster_name = "nomadcluster"
+  nomad_client_source_image = "rhel-7-v20210420"
+  nomad_consul_server_cluster_name = "consuls"
   nomad_consul_server_source_image = "rhel-7-v20210420"
   nomad_client_cluster_size = 5
   nomad_client_machine_type = "g1-small"
