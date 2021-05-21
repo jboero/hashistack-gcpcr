@@ -31,17 +31,17 @@ variable "singletons" {
       name  = "nomad:latest"
       command = ["/usr/bin/nomad", "agent", "-dev", "-bind", "0.0.0.0"]
       port = 4646
+    },
+    boundary = { // Boundary requires an external Postgres db.
+      name  = "boundary:latest"
+      command = ["/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
+      port = 9200
     }/*,
     waypoint = { // Waypoint forces TLS unfortunately which breaks GCR.
       name  = "waypoint:latest"
       command = ["/usr/bin/waypoint", "server", "run", "-accept-tos", 
         "-url-api-insecure", "-listen-http=0.0.0.0:9702",  "-db=/tmp/tmp.db"]
       port = 9702
-    },
-    boundary = { // Boundary requires an external Postgres db.
-      name  = "boundary:latest"
-      command = ["/bin/boundary", "server", "-config=/etc/boundary.d/controller.hcl"]
-      port = 9200
     }*/
   }
 }
