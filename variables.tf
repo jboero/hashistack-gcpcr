@@ -8,6 +8,10 @@ variable "region" {
     default = "europe-west4"
 }
 
+variable "boundarydbpass" {
+    description = "Boundary database user password."
+}
+
 // Set this to a map of your container images and which primary port they use.
 // Since it's a map you can add extra attributes if you need to.
 variable "singletons" {
