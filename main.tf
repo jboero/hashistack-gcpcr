@@ -18,6 +18,23 @@ data "google_iam_policy" "noauth" {
   }
 }
 
+// Postgres for Boundary
+resource "google_sql_database_instance" "boundary" {
+  name             = "boundary"
+  database_version = "POSTGRES_11"
+  region           = var.region
+
+  settings {
+    tier = "db-f1-micro"
+  }
+}
+ 
+resource "google_sql_user" "users" {
+  name     = "boundary"
+  instance = google_sql_database_instance.boundary.name
+  password = var.boundarydbpass
+}
+
 // Use a for_each on var.singletons
 resource "google_cloud_run_service" "runners" {
   for_each = var.singletons
