@@ -8,6 +8,9 @@ variable "region" {
     default = "europe-west4"
 }
 
+variable "location" {
+}
+
 variable "boundarydbpass" {
     description = "Boundary database user password."
 }
